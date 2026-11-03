@@ -121,6 +121,21 @@
 
         </div>
 
+        <div class="d-flex justify-content-between align-items-center mt-3">
+
+            {{-- Quantidade de resultados à esquerda --}}
+            <div>
+                Mostrando {{ $pets->firstItem() }} a {{ $pets->lastItem() }}
+                de {{ $pets->total() }} resultados
+            </div>
+
+            {{-- Paginação à direita --}}
+            <div>
+                {{ $pets->links() }}
+            </div>
+
+        </div>
+
     </div>
 
 </div>
