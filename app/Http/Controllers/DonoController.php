@@ -12,7 +12,7 @@ class DonoController extends Controller
 {
     public function index()
     {
-        $donos = Dono::all();
+        $donos = Dono::orderBy("nome")->paginate(10);
 
         return view('listaDono', [
             'donos' => $donos
