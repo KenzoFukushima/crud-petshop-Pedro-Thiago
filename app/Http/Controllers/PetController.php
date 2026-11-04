@@ -12,7 +12,7 @@ class PetController extends Controller
 {
     public function index()
     {
-        $pets = Pet::with('dono')->get();
+        $pets = Pet::with('dono')->orderBy('nome')->paginate(10);
 
         return view('listaPet', [
             'pets' => $pets

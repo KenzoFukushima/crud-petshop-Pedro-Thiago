@@ -5,14 +5,18 @@ namespace App\Http\Controllers;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
 use App\Models\Dono;
+use App\Models\User;
 use App\Services\Operations;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class DonoController extends Controller
 {
     public function index()
     {
-        $donos = Dono::all();
+        $donos = Dono::orderBy('nome')->paginate(10);
 
         return view('listaDono', [
             'donos' => $donos
@@ -57,7 +61,7 @@ class DonoController extends Controller
         $request->validate(
             [
                 'nome' => 'required|min:2|max:100',
-                'email' => 'required|email|min:8|max:100|unique:donos,email',
+                'email' => 'required|email|min:8|max:100|unique:donos,email|unique:users,email',
                 'telefone' => 'required|max:20',
                 'cpf' => 'nullable|max:14|min:11|unique:donos,cpf',
                 'endereco' => 'nullable|max:255',
@@ -68,7 +72,7 @@ class DonoController extends Controller
                 'email.required' => 'O Email é obrigatório.',
                 'email.email' => 'Email inválido.',
                 'email.min' => 'Precisa ter no mínimo 8 caracteres.',
-                'email.unique' => 'Este e-mail já está cadastrado para outro dono.',
+                'email.unique' => 'Este e-mail já está cadastrado.',
                 'telefone.required' => 'O campo telefone é obrigatório.',
                 'telefone.max' => 'O telefone deve ter no máximo 20 caracteres.',
                 'cpf.max' => 'O CPF inválido.',
@@ -78,27 +82,41 @@ class DonoController extends Controller
             ]
         );
 
-        $dono = new Dono();
+        DB::transaction(function () use ($request, $cpf) {
 
-        $dono->nome = $request->nome;
-        $dono->email = $request->email;
-        $dono->telefone = $request->telefone;
-        $dono->cpf = $cpf;
-        $dono->endereco = $request->endereco;
+            // 1. Criar o dono
+            $dono = new Dono();
 
-        $dono->save();
+            $dono->nome = $request->nome;
+            $dono->email = $request->email;
+            $dono->telefone = $request->telefone;
+            $dono->cpf = $cpf;
+            $dono->endereco = $request->endereco;
+
+            $dono->save();
+
+            // 2. Criar o usuário vinculado ao dono
+            User::create([
+                'name' => $dono->nome,
+                'email' => $dono->email,
+                'username' => $dono->email,
+                'password' => Hash::make(Str::random(12)),
+                'role' => 'dono',
+                'id_dono' => $dono->id,
+            ]);
+
+        });
 
         return redirect()->route('telaListaDono');
     }
 
     public function editDono($id)
     {
-
-
         try {
             $decrypted_id = Operations::decryptId($id);
         } catch (DecryptException $e) {
-            return redirect()->route('telaListaDono')->with('erro', 'Link inválido ou adulterado.');
+            return redirect()->route('telaListaDono')
+                ->with('erro', 'Link inválido ou adulterado.');
         }
 
         $dono = Dono::find($decrypted_id);
@@ -126,7 +144,8 @@ class DonoController extends Controller
         try {
             $id = Operations::decryptId($request->dono_id);
         } catch (DecryptException $e) {
-            return redirect()->route('telaListaDono')->with('erro', 'Link inválido ou adulterado.');
+            return redirect()->route('telaListaDono')
+                ->with('erro', 'Link inválido ou adulterado.');
         }
 
         $dono = Dono::find($id);
@@ -177,24 +196,35 @@ class DonoController extends Controller
             ]
         );
 
-        $dono->nome = $request->nome;
-        $dono->email = $request->email;
-        $dono->telefone = $request->telefone;
-        $dono->cpf = $cpf;
-        $dono->endereco = $request->endereco;
+        DB::transaction(function () use ($dono, $request, $cpf) {
 
-        $dono->save();
+            // Atualizar os dados do dono
+            $dono->nome = $request->nome;
+            $dono->email = $request->email;
+            $dono->telefone = $request->telefone;
+            $dono->cpf = $cpf;
+            $dono->endereco = $request->endereco;
+
+            $dono->save();
+
+            User::where('id_dono', $dono->id)->update([
+                'name' => $dono->nome,
+                'email' => $dono->email,
+                'username' => $dono->email,
+            ]);
+
+        });
 
         return redirect()->route('telaListaDono');
     }
 
     public function deleteDono($id)
     {
-
         try {
             $decrypted_id = Operations::decryptId($id);
         } catch (DecryptException $e) {
-            return redirect()->route('telaListaDono')->with('erro', 'Link inválido ou adulterado.');
+            return redirect()->route('telaListaDono')
+                ->with('erro', 'Link inválido ou adulterado.');
         }
 
         $dono = Dono::find($decrypted_id);
@@ -203,7 +233,13 @@ class DonoController extends Controller
             return redirect()->route('telaListaDono');
         }
 
-        $dono->delete();
+        DB::transaction(function () use ($dono) {
+
+            User::where('id_dono', $dono->id)->delete();
+
+            $dono->delete();
+
+        });
 
         return redirect()->route('telaListaDono');
     }

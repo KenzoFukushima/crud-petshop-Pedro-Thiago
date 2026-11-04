@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('username',60)->unique();
             $table->string('password',100);
             $table->string('email')->unique();
+            $table->string('role', 20)->default('dono');
+            $table->foreignId('id_dono')->nullable()->constrained('donos')->nullOnDelete();
             $table->dateTime('last_login')->nullable();
             $table->timestamps();
             $table->softDeletes(); 

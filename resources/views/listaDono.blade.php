@@ -113,6 +113,19 @@
 
         </div>
 
+        <div class="d-flex justify-content-between align-items-center mt-3">
+
+            <div>
+                Mostrando {{ $donos->firstItem() }} a {{ $donos->lastItem() }}
+                de {{ $donos->total() }} resultados
+            </div>
+
+            <div>
+                {{ $donos->links() }}
+            </div>
+
+        </div>
+
     </div>
 
 </div>

@@ -2,22 +2,28 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
+use App\Models\Dono;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Seeder;
 
 class UserSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        DB::table('users')->insert([
-            'username' => 'Admin',
-            'email' => 'admin@gmail.com',
-            'password' => bcrypt('senha123')
+        // admin
+        User::factory()->admin()->create([
+            'username' => 'admin',
+            'email' => 'admin@petshop.com',
         ]);
+
+        // um login para cada dono
+        Dono::all()->each(function ($dono) {
+            User::factory()->create([
+                'username' => $dono->email,
+                'email' => $dono->email,
+                'role' => 'dono',
+                'id_dono' => $dono->id,
+            ]);
+        });
     }
 }

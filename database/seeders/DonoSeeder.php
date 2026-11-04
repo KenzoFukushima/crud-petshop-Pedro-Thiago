@@ -13,6 +13,6 @@ class DonoSeeder extends Seeder
      */
     public function run(): void
     {
-        Dono::factory()->count(10)->create();
+        Dono::factory()->count(15)->create();
     }
 }
