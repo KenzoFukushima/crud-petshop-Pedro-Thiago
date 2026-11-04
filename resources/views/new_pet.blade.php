@@ -13,35 +13,26 @@
             Dono
         </label>
 
-        <input
-            type="text"
-            id="dono_pesquisa"
-            class="form-control @error('id_dono') is-invalid @enderror"
-            list="lista-donos"
-            placeholder="Pesquise pelo nome do dono"
-            value="{{ old('dono_nome') }}"
-            autocomplete="off"
+        <select
+            name="id_dono"
+            id="id_dono"
+            class="form-select @error('id_dono') is-invalid @enderror"
+            required
         >
 
-        <datalist id="lista-donos">
+            <option value="">
+                Selecione o dono
+            </option>
 
             @foreach ($donos as $donoItem)
 
-                <option
-                    value="{{ $donoItem->nome }}"
-                    data-id="{{ $donoItem->id }}"
-                ></option>
+                <option value="{{ $donoItem->id }}" {{ old('id_dono') == $donoItem->id ? 'selected' : '' }}>
+                    {{ $donoItem->nome }}
+                </option>
 
             @endforeach
 
-        </datalist>
-
-        <input
-            type="hidden"
-            name="id_dono"
-            id="id_dono"
-            value="{{ old('id_dono') }}"
-        >
+        </select>
 
         @error('id_dono')
             <div class="text-danger">
@@ -196,26 +187,5 @@
         @enderror
 
     </div>
-
-
-    <script>
-        const donoPesquisa = document.getElementById('dono_pesquisa');
-        const idDono = document.getElementById('id_dono');
-        const opcoesDono = document.querySelectorAll('#lista-donos option');
-
-        donoPesquisa.addEventListener('input', function () {
-
-            idDono.value = '';
-
-            opcoesDono.forEach(function (opcao) {
-
-                if (opcao.value === donoPesquisa.value) {
-                    idDono.value = opcao.dataset.id;
-                }
-
-            });
-
-        });
-    </script>
 
 @endsection
