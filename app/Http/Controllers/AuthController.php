@@ -54,17 +54,30 @@ class AuthController extends Controller
                     ->with('login_error','E-mail ou password incorretos!');
         }
         
-        $user->last_login = date('Y-m-d H:i:s');
+        $user->last_login = now();
         $user->save(); 
 
         session([
             'user' => [
                 'id' => $user->id,
                 'username' => $user->username,
+                'role' => $user->role,
+                'id_dono' => $user->id_dono,
             ]
         ]);
 
-        return redirect('/');
+        if ($user->role === 'admin') {
+            return redirect()->route('dashboard');
+        }
+
+        if ($user->role === 'dono') {
+            return redirect()->route('home.dono');
+        }
+
+        session()->forget('user');
+
+        return redirect()->route('login')
+            ->with('login_error', 'Tipo de usuário inválido.');
     }
 
     public function logout(){
