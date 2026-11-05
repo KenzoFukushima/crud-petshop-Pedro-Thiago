@@ -19,6 +19,10 @@ class User extends Model
         'last_login',
     ];
 
+    protected $hidden = [
+        'password',
+    ];
+
     public function dono()
     {
         return $this->belongsTo(Dono::class, 'id_dono');

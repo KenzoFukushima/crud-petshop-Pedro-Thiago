@@ -29,6 +29,14 @@
 </div>
 
 
+{{-- Busca --}}
+@include('layout.busca', [
+    'rota' => route('telaListaPet'),
+    'busca' => $busca,
+    'placeholder' => 'Buscar por nome, espécie, raça ou dono...',
+])
+
+
 <div class="card shadow-sm">
 
     <div class="card-body">
@@ -53,7 +61,7 @@
 
                 <tbody>
 
-                    @foreach ($pets as $pet)
+                    @forelse ($pets as $pet)
 
                     <tr>
 
@@ -100,20 +108,33 @@
 
 
                             {{-- Excluir --}}
-                            <a href="{{ route('delete.pet', [
-                                'id' => \App\Services\Operations::encryptId($pet->id)
-                            ]) }}"
-                               class="btn btn-sm btn-danger">
+                            <form action="{{ route('delete.pet', ['id' => \App\Services\Operations::encryptId($pet->id)]) }}"
+                                  method="POST"
+                                  class="d-inline"
+                                  onsubmit="return confirm('Excluir este pet?')">
 
-                                <i class="fas fa-trash"></i>
+                                @csrf
+                                @method('DELETE')
 
-                            </a>
+                                <button type="submit" class="btn btn-sm btn-danger">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+
+                            </form>
 
                         </td>
 
                     </tr>
 
-                    @endforeach
+                    @empty
+
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">
+                            Nenhum registro encontrado.
+                        </td>
+                    </tr>
+
+                    @endforelse
 
                 </tbody>
 
@@ -125,7 +146,7 @@
 
             {{-- Quantidade de resultados à esquerda --}}
             <div>
-                Mostrando {{ $pets->firstItem() }} a {{ $pets->lastItem() }}
+                Mostrando {{ $pets->firstItem() ?? 0 }} a {{ $pets->lastItem() ?? 0 }}
                 de {{ $pets->total() }} resultados
             </div>
 

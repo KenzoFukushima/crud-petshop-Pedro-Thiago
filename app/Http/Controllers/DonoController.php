@@ -4,37 +4,38 @@ namespace App\Http\Controllers;
 
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
+use App\Http\Requests\DonoRequest;
 use App\Models\Dono;
 use App\Models\User;
 use App\Services\Operations;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class DonoController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $donos = Dono::orderBy('nome')->paginate(10);
+        // Busca por nome, e-mail, telefone ou CPF
+        $busca = trim((string) $request->query('busca', ''));
+
+        $donos = Dono::query()
+            ->when($busca !== '', function ($query) use ($busca) {
+                $query->where(function ($q) use ($busca) {
+                    $q->where('nome', 'like', "%{$busca}%")
+                        ->orWhere('email', 'like', "%{$busca}%")
+                        ->orWhere('telefone', 'like', "%{$busca}%")
+                        ->orWhere('cpf', 'like', "%{$busca}%");
+                });
+            })
+            ->orderBy('nome')
+            ->paginate(10)
+            ->withQueryString();
 
         return view('listaDono', [
-            'donos' => $donos
+            'donos' => $donos,
+            'busca' => $busca,
         ]);
-    }
-
-    private function formatarCpf($cpf)
-    {
-        $cpfLimpo = preg_replace('/[^0-9]/', '', $cpf);
-
-        if (strlen($cpfLimpo) !== 11) {
-            return $cpf;
-        }
-
-        return sprintf(
-            '%s%s%s.%s%s%s.%s%s%s-%s%s',
-            ...str_split($cpfLimpo)
-        );
     }
 
     public function newDono()
@@ -48,56 +49,15 @@ class DonoController extends Controller
         ]);
     }
 
-    public function newDonoSubmit(Request $request)
+    public function newDonoSubmit(DonoRequest $request)
     {
-        $cpf = $request->cpf
-            ? $this->formatarCpf($request->cpf)
-            : null;
-
-        $request->merge([
-            'cpf' => $cpf
-        ]);
-
-        $request->validate(
-            [
-                'nome' => 'required|min:2|max:100',
-                'email' => 'required|email|min:8|max:100|unique:donos,email|unique:users,email',
-                'telefone' => 'required|max:20',
-                'cpf' => 'nullable|max:14|min:11|unique:donos,cpf',
-                'endereco' => 'nullable|max:255',
-            ],
-            [
-                'nome.required' => 'O campo nome é obrigatório.',
-                'nome.min' => 'O nome deve ter no mínimo 2 caracteres.',
-                'email.required' => 'O Email é obrigatório.',
-                'email.email' => 'Email inválido.',
-                'email.min' => 'Precisa ter no mínimo 8 caracteres.',
-                'email.unique' => 'Este e-mail já está cadastrado.',
-                'telefone.required' => 'O campo telefone é obrigatório.',
-                'telefone.max' => 'O telefone deve ter no máximo 20 caracteres.',
-                'cpf.max' => 'O CPF inválido.',
-                'cpf.min' => 'O CPF inválido.',
-                'cpf.unique' => 'Este CPF já está cadastrado para outro dono.',
-                'endereco.max' => 'O endereço deve ter no máximo 255 caracteres.',
-            ]
-        );
-
-        DB::transaction(function () use ($request, $cpf) {
+        DB::transaction(function () use ($request) {
 
             // 1. Criar o dono
-            $dono = new Dono();
-
-            $dono->nome = $request->nome;
-            $dono->email = $request->email;
-            $dono->telefone = $request->telefone;
-            $dono->cpf = $cpf;
-            $dono->endereco = $request->endereco;
-
-            $dono->save();
+            $dono = Dono::create($request->validated());
 
             // 2. Criar o usuário vinculado ao dono
             User::create([
-                'name' => $dono->nome,
                 'email' => $dono->email,
                 'username' => $dono->email,
                 'password' => Hash::make(Str::random(12)),
@@ -107,7 +67,8 @@ class DonoController extends Controller
 
         });
 
-        return redirect()->route('telaListaDono');
+        return redirect()->route('telaListaDono')
+            ->with('sucesso', 'Dono cadastrado com sucesso.');
     }
 
     public function editDono($id)
@@ -135,12 +96,8 @@ class DonoController extends Controller
         ]);
     }
 
-    public function editDonoSubmit(Request $request)
+    public function editDonoSubmit(DonoRequest $request)
     {
-        if ($request->dono_id === null) {
-            return redirect()->route('telaListaDono');
-        }
-
         try {
             $id = Operations::decryptId($request->dono_id);
         } catch (DecryptException $e) {
@@ -154,68 +111,21 @@ class DonoController extends Controller
             return redirect()->route('telaListaDono');
         }
 
-        $cpf = $request->cpf
-            ? $this->formatarCpf($request->cpf)
-            : null;
-
-        $request->merge([
-            'cpf' => $cpf
-        ]);
-
-        $request->validate(
-            [
-                'nome' => 'required|min:2|max:100',
-                'email' => [
-                    'required',
-                    'email',
-                    'min:8',
-                    'max:100',
-                    Rule::unique('donos', 'email')->ignore($dono->id),
-                ],
-                'telefone' => 'required|max:20',
-                'cpf' => [
-                    'nullable',
-                    'max:14',
-                    'min:11',
-                    Rule::unique('donos', 'cpf')->ignore($dono->id),
-                ],
-                'endereco' => 'nullable|max:255',
-            ],
-            [
-                'nome.required' => 'O campo nome é obrigatório.',
-                'nome.min' => 'O nome deve ter no mínimo 2 caracteres.',
-                'email.email' => 'Email inválido.',
-                'email.min' => 'Precisa ter no mínimo 8 caracteres.',
-                'email.unique' => 'Este e-mail já está cadastrado para outro dono.',
-                'telefone.required' => 'O campo telefone é obrigatório.',
-                'telefone.max' => 'O telefone deve ter no máximo 20 caracteres.',
-                'cpf.max' => 'O CPF inválido.',
-                'cpf.min' => 'O CPF inválido.',
-                'cpf.unique' => 'Este CPF já está cadastrado para outro dono.',
-                'endereco.max' => 'O endereço deve ter no máximo 255 caracteres.',
-            ]
-        );
-
-        DB::transaction(function () use ($dono, $request, $cpf) {
+        DB::transaction(function () use ($dono, $request) {
 
             // Atualizar os dados do dono
-            $dono->nome = $request->nome;
-            $dono->email = $request->email;
-            $dono->telefone = $request->telefone;
-            $dono->cpf = $cpf;
-            $dono->endereco = $request->endereco;
+            $dono->update($request->safe()->except('dono_id'));
 
-            $dono->save();
-
+            // Mantém o login (users) igual ao e-mail do dono
             User::where('id_dono', $dono->id)->update([
-                'name' => $dono->nome,
                 'email' => $dono->email,
                 'username' => $dono->email,
             ]);
 
         });
 
-        return redirect()->route('telaListaDono');
+        return redirect()->route('telaListaDono')
+            ->with('sucesso', 'Dono atualizado com sucesso.');
     }
 
     public function deleteDono($id)
@@ -241,6 +151,7 @@ class DonoController extends Controller
 
         });
 
-        return redirect()->route('telaListaDono');
+        return redirect()->route('telaListaDono')
+            ->with('sucesso', 'Dono excluído com sucesso.');
     }
 }

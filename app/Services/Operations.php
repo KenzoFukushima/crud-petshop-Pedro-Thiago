@@ -18,5 +18,15 @@ class Operations
             return Crypt::encrypt($value);
         }
 
+    // Igual ao decryptId, mas devolve null em vez de lançar exceção
+    // (usado nos Form Requests para saber qual registro ignorar no unique)
+    public static function tryDecryptId($value)
+        {
+            try {
+                return Crypt::decrypt($value);
+            } catch (\Throwable $e) {
+                return null;
+            }
+        }
 
 }

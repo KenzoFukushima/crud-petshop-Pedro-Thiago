@@ -29,6 +29,14 @@
 </div>
 
 
+{{-- Busca --}}
+@include('layout.busca', [
+    'rota' => route('telaListaDono'),
+    'busca' => $busca,
+    'placeholder' => 'Buscar por nome, e-mail, telefone ou CPF...',
+])
+
+
 <div class="card shadow-sm">
 
     <div class="card-body">
@@ -54,7 +62,7 @@
 
                 <tbody>
 
-                    @foreach ($donos as $dono)
+                    @forelse ($donos as $dono)
 
                     <tr>
 
@@ -94,18 +102,33 @@
 
 
                             {{-- Excluir --}}
-                            <a href="{{ route('delete.dono', ['id' => \App\Services\Operations::encryptId($dono->id)]) }}"
-                               class="btn btn-sm btn-danger">
+                            <form action="{{ route('delete.dono', ['id' => \App\Services\Operations::encryptId($dono->id)]) }}"
+                                  method="POST"
+                                  class="d-inline"
+                                  onsubmit="return confirm('Excluir este dono? O login dele também será removido.')">
 
-                                <i class="fas fa-trash"></i>
+                                @csrf
+                                @method('DELETE')
 
-                            </a>
+                                <button type="submit" class="btn btn-sm btn-danger">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+
+                            </form>
 
                         </td>
 
                     </tr>
 
-                    @endforeach
+                    @empty
+
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-4">
+                            Nenhum registro encontrado.
+                        </td>
+                    </tr>
+
+                    @endforelse
 
                 </tbody>
 
@@ -116,7 +139,7 @@
         <div class="d-flex justify-content-between align-items-center mt-3">
 
             <div>
-                Mostrando {{ $donos->firstItem() }} a {{ $donos->lastItem() }}
+                Mostrando {{ $donos->firstItem() ?? 0 }} a {{ $donos->lastItem() ?? 0 }}
                 de {{ $donos->total() }} resultados
             </div>
 
