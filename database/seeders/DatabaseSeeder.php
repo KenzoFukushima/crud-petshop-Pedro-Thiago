@@ -15,6 +15,8 @@ class DatabaseSeeder extends Seeder
             DonoSeeder::class,
             PetSeeder::class,
             UserSeeder::class,
+            ServicoSeeder::class,
+            AgendamentoSeeder::class,
         ]);
     }
 }

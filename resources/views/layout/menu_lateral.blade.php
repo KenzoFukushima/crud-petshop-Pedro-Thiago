@@ -40,6 +40,22 @@
 
                 </a>
 
+
+                <a href="{{ route('telaListaServico') }}" class="btn btn-primary text-start text-white">
+
+                    <i class="fas fa-scissors me-2"></i>
+                    Serviços
+
+                </a>
+
+
+                <a href="{{ route('telaListaAgendamento') }}" class="btn btn-primary text-start text-white">
+
+                    <i class="fas fa-calendar-check me-2"></i>
+                    Agendamentos
+
+                </a>
+
             </div>
 
 

@@ -23,4 +23,9 @@ class Pet extends Model
     {
         return $this->belongsTo(Dono::class, 'id_dono');
     }
+
+    public function agendamentos()
+    {
+        return $this->hasMany(Agendamento::class, 'id_pet');
+    }
 }

@@ -1,10 +1,11 @@
-
 <?php
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DonoController;
 use App\Http\Controllers\PetController;
+use App\Http\Controllers\ServicoController;
+use App\Http\Controllers\AgendamentoController;
 use App\Http\Controllers\HomeDonoController;
 use App\Http\Middleware\CheckIsLogged;
 use App\Http\Middleware\CheckIsNotLogged;
@@ -61,7 +62,7 @@ Route::middleware([CheckIsLogged::class])->group(function () {
         Route::post('/edit-pet-submit', [PetController::class, 'editPetSubmit'])
             ->name('edit.pet.submit');
 
-        Route::get('/delete-pet/{id}', [PetController::class, 'deletePet'])
+        Route::delete('/delete-pet/{id}', [PetController::class, 'deletePet'])
             ->name('delete.pet');
 
 
@@ -81,8 +82,48 @@ Route::middleware([CheckIsLogged::class])->group(function () {
         Route::post('/edit-dono-submit', [DonoController::class, 'editDonoSubmit'])
             ->name('edit.dono.submit');
 
-        Route::get('/delete-dono/{id}', [DonoController::class, 'deleteDono'])
+        Route::delete('/delete-dono/{id}', [DonoController::class, 'deleteDono'])
             ->name('delete.dono');
+
+
+        // Gerenciamento de Serviços
+        Route::get('/lista-servico', [ServicoController::class, 'index'])
+            ->name('telaListaServico');
+
+        Route::get('/new-servico', [ServicoController::class, 'newServico'])
+            ->name('new.servico');
+
+        Route::post('/new-servico-submit', [ServicoController::class, 'newServicoSubmit'])
+            ->name('newServicoSubmit');
+
+        Route::get('/edit-servico/{id}', [ServicoController::class, 'editServico'])
+            ->name('edit.servico');
+
+        Route::post('/edit-servico-submit', [ServicoController::class, 'editServicoSubmit'])
+            ->name('edit.servico.submit');
+
+        Route::delete('/delete-servico/{id}', [ServicoController::class, 'deleteServico'])
+            ->name('delete.servico');
+
+
+        // Gerenciamento de Agendamentos
+        Route::get('/lista-agendamento', [AgendamentoController::class, 'index'])
+            ->name('telaListaAgendamento');
+
+        Route::get('/new-agendamento', [AgendamentoController::class, 'newAgendamento'])
+            ->name('new.agendamento');
+
+        Route::post('/new-agendamento-submit', [AgendamentoController::class, 'newAgendamentoSubmit'])
+            ->name('newAgendamentoSubmit');
+
+        Route::get('/edit-agendamento/{id}', [AgendamentoController::class, 'editAgendamento'])
+            ->name('edit.agendamento');
+
+        Route::post('/edit-agendamento-submit', [AgendamentoController::class, 'editAgendamentoSubmit'])
+            ->name('edit.agendamento.submit');
+
+        Route::delete('/delete-agendamento/{id}', [AgendamentoController::class, 'deleteAgendamento'])
+            ->name('delete.agendamento');
 
     });
 
