@@ -9,6 +9,7 @@ use App\Http\Controllers\HomeDonoController;
 use App\Http\Middleware\CheckIsLogged;
 use App\Http\Middleware\CheckIsNotLogged;
 use App\Http\Middleware\CheckIsAdmin;
+use App\Http\Controllers\PerfilController;
 
 
 // Rotas de login
@@ -29,9 +30,12 @@ Route::middleware([CheckIsLogged::class])->group(function () {
     Route::get('/logout', [AuthController::class, 'logout'])
         ->name('logout');
 
-    // Página inicial do dono
+    
     Route::get('/inicio', [HomeDonoController::class, 'index'])
         ->name('home.dono');
+    
+    Route::get('/perfil', [PerfilController::class, 'index'])->name('perfil');
+    Route::post('/perfil', [PerfilController::class, 'update'])->name('perfil.update');
 
 
     // Rotas exclusivas do administrador
