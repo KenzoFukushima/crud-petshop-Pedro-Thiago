@@ -51,11 +51,19 @@
                     </li>
 
                     <li class="nav-item">
+                        <a class="nav-link text-dark" href="{{ route('perfil') }}">
+                            Meu Perfil
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
                         <a class="btn btn-primary rounded-pill px-4"
                             href="{{ route('logout') }}">
                             Sair
                         </a>
                     </li>
+
+                    
 
                 </ul>
             </div>
@@ -63,11 +71,8 @@
         </div>
     </nav>
 
-    {{-- Conteúdo das páginas --}}
     @yield('content')
 
-    {{-- Bootstrap JS --}}
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>
