@@ -22,6 +22,12 @@ Route::middleware([CheckIsNotLogged::class])->group(function () {
     Route::post('/loginSubmit', [AuthController::class, 'loginSubmit'])
         ->name('loginSubmit');
 
+    Route::get('/cadastro', [AuthController::class, 'register'])
+        ->name('register');
+
+    Route::post('/cadastroSubmit', [AuthController::class, 'registerSubmit'])
+        ->name('registerSubmit');
+
 });
 
 

@@ -6,6 +6,9 @@ use App\Models\Dono;
 use App\Models\Pet;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Http\Requests\CadastroRequest;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -78,6 +81,44 @@ class AuthController extends Controller
 
         return redirect()->route('login')
             ->with('login_error', 'Tipo de usuário inválido.');
+    }
+
+        public function register() {
+        return view('register');
+    }
+
+    public function registerSubmit(CadastroRequest $request) {
+
+        $user = null;
+
+        DB::transaction(function () use ($request, &$user) {
+
+            $dono = Dono::create(
+                $request->safe()->except(['password', 'password_confirmation'])
+            );
+
+            $user = User::create([
+                'username' => $dono->email,
+                'email' => $dono->email,
+                'password' => Hash::make($request->password),
+                'role' => 'dono',
+                'id_dono' => $dono->id,
+                'last_login' => now(),
+            ]);
+
+        });
+
+        session([
+            'user' => [
+                'id' => $user->id,
+                'username' => $user->username,
+                'role' => $user->role,
+                'id_dono' => $user->id_dono,
+            ]
+        ]);
+
+        return redirect()->route('home.dono')
+            ->with('sucesso', 'Cadastro realizado com sucesso. Bem-vindo ao PetShop!');
     }
 
     public function logout(){
