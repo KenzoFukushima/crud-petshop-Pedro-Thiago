@@ -15,6 +15,7 @@ class Servico extends Model
         'descricao',
         'preco',
         'duracao_minutos',
+        'imagem',
     ];
 
     protected $casts = [

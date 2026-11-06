@@ -34,6 +34,7 @@ class ServicoRequest extends FormRequest
             'descricao' => 'nullable|max:255',
             'preco' => 'required|numeric|min:0|max:999999.99',
             'duracao_minutos' => 'required|integer|min:5|max:480',
+            'imagem' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ];
 
         if (!$this->isCriacao()) {
@@ -60,6 +61,9 @@ class ServicoRequest extends FormRequest
             'duracao_minutos.integer' => 'A duração deve ser um número inteiro de minutos.',
             'duracao_minutos.min' => 'A duração mínima é de :min minutos.',
             'duracao_minutos.max' => 'A duração máxima é de :max minutos.',
+            'imagem.image' => 'O arquivo precisa ser uma imagem.',
+            'imagem.mimes' => 'A imagem deve ser JPG, JPEG, PNG ou WEBP.',
+            'imagem.max' => 'A imagem deve ter no máximo 2 MB.',
         ];
     }
 }

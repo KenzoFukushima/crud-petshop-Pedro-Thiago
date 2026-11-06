@@ -19,7 +19,7 @@
 <div class="card border-0 shadow-sm">
     <div class="card-body p-4">
 
-        <form action="{{ $action }}" method="POST">
+        <form action="{{ $action }}" method="POST" enctype="multipart/form-data">
             @csrf
 
             @yield('form-fields')

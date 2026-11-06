@@ -10,10 +10,10 @@ use App\Models\User;
 use App\Services\Operations;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class DonoController extends Controller
 {
+    private const SENHA_INICIAL = '12345678';
     public function index(Request $request)
     {
         // Busca por nome, e-mail, telefone ou CPF
@@ -60,15 +60,15 @@ class DonoController extends Controller
             User::create([
                 'email' => $dono->email,
                 'username' => $dono->email,
-                'password' => Hash::make(Str::random(12)),
+                'password' => Hash::make(self::SENHA_INICIAL),
                 'role' => 'dono',
                 'id_dono' => $dono->id,
             ]);
 
         });
 
-        return redirect()->route('telaListaDono')
-            ->with('sucesso', 'Dono cadastrado com sucesso.');
+            return redirect()->route('telaListaDono')
+            ->with('sucesso', 'Dono cadastrado com sucesso. Login: ' . $request->email . ' | senha inicial: ' . self::SENHA_INICIAL);
     }
 
     public function editDono($id)

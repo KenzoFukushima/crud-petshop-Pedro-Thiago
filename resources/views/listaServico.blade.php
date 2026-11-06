@@ -48,6 +48,7 @@
                 <thead>
 
                     <tr>
+                        <th>Imagem</th>
                         <th>Nome</th>
                         <th>Descrição</th>
                         <th>Preço</th>
@@ -63,6 +64,20 @@
                     @forelse ($servicos as $servico)
 
                     <tr>
+
+                        <td>
+                            @if ($servico->imagem)
+                                <img src="{{ asset('storage/' . $servico->imagem) }}"
+                                     alt="Imagem de {{ $servico->nome }}"
+                                     class="rounded border"
+                                     style="width: 48px; height: 48px; object-fit: cover;">
+                            @else
+                                <span class="d-inline-flex align-items-center justify-content-center rounded bg-light border text-success"
+                                      style="width: 48px; height: 48px;">
+                                    <i class="fas fa-scissors"></i>
+                                </span>
+                            @endif
+                        </td>
 
                         <td>
                             <i class="fas fa-scissors me-2 text-success"></i>

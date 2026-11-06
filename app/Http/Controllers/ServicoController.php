@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\ServicoRequest;
 use App\Models\Servico;
 use App\Services\Operations;
+use Illuminate\Support\Facades\Storage;
 
 class ServicoController extends Controller
 {
@@ -45,7 +46,13 @@ class ServicoController extends Controller
 
     public function newServicoSubmit(ServicoRequest $request)
     {
-        Servico::create($request->validated());
+        $dados = $request->safe()->except('imagem');
+
+        if ($request->hasFile('imagem')) {
+            $dados['imagem'] = $request->file('imagem')->store('servicos', 'public');
+        }
+
+        Servico::create($dados);
 
         return redirect()->route('telaListaServico')
             ->with('sucesso', 'Serviço cadastrado com sucesso.');
@@ -91,7 +98,19 @@ class ServicoController extends Controller
             return redirect()->route('telaListaServico');
         }
 
-        $servico->update($request->safe()->except('servico_id'));
+        $dados = $request->safe()->except(['servico_id', 'imagem']);
+
+        // Imagem nova: apaga a antiga do disco e guarda a nova
+        if ($request->hasFile('imagem')) {
+
+            if ($servico->imagem) {
+                Storage::disk('public')->delete($servico->imagem);
+            }
+
+            $dados['imagem'] = $request->file('imagem')->store('servicos', 'public');
+        }
+
+        $servico->update($dados);
 
         return redirect()->route('telaListaServico')
             ->with('sucesso', 'Serviço atualizado com sucesso.');

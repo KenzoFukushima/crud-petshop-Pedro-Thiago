@@ -12,7 +12,9 @@ class CheckIsNotLogged
     public function handle(Request $request, Closure $next): Response
     {
         if (session()->has('user')) {
-            return redirect('/');
+            return session('user.role') === 'admin'
+                ? redirect()->route('dashboard')
+                : redirect()->route('home.dono');
         }
 
         return $next($request);
