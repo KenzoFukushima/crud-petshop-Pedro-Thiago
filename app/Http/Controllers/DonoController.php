@@ -32,7 +32,7 @@ class DonoController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return view('listaDono', [
+        return view('admin.donos.listaDono', [
             'donos' => $donos,
             'busca' => $busca,
         ]);
@@ -40,7 +40,7 @@ class DonoController extends Controller
 
     public function newDono()
     {
-        return view('new_dono', [
+        return view('admin.donos.new_dono', [
             'titulo' => 'Cadastrar Dono',
             'descricao' => 'Cadastre um novo dono para o Pet Shop.',
             'action' => route('newDonoSubmit'),
@@ -86,7 +86,7 @@ class DonoController extends Controller
             return redirect()->route('telaListaDono');
         }
 
-        return view('edit_dono', [
+        return view('admin.donos.edit_dono', [
             'dono' => $dono,
             'titulo' => 'Editar Dono',
             'descricao' => 'Altere os dados do dono abaixo.',

@@ -39,7 +39,7 @@ class AgendamentoController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return view('listaAgendamento', [
+        return view('admin.agendamentos.listaAgendamento', [
             'agendamentos' => $agendamentos,
             'busca' => $busca,
             'status' => $status,
@@ -50,7 +50,7 @@ class AgendamentoController extends Controller
 
     public function newAgendamento()
     {
-        return view('new_agendamento', [
+        return view('admin.agendamentos.new_agendamento', [
             'pets' => Pet::with('dono')->orderBy('nome')->get(),
             'servicos' => Servico::orderBy('nome')->get(),
             'statusList' => Agendamento::STATUS,
@@ -85,7 +85,7 @@ class AgendamentoController extends Controller
             return redirect()->route('telaListaAgendamento');
         }
 
-        return view('edit_agendamento', [
+        return view('admin.agendamentos.edit_agendamento', [
             'agendamento' => $agendamento,
             'pets' => Pet::with('dono')->orderBy('nome')->get(),
             'servicos' => Servico::orderBy('nome')->get(),

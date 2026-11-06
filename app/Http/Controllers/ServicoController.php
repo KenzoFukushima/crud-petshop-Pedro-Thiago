@@ -27,7 +27,7 @@ class ServicoController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return view('listaServico', [
+        return view('admin.servicos.listaServico', [
             'servicos' => $servicos,
             'busca' => $busca,
         ]);
@@ -35,7 +35,7 @@ class ServicoController extends Controller
 
     public function newServico()
     {
-        return view('new_servico', [
+        return view('admin.servicos.new_servico', [
             'titulo' => 'Cadastrar Serviço',
             'descricao' => 'Cadastre um novo serviço oferecido pelo Pet Shop.',
             'action' => route('newServicoSubmit'),
@@ -73,7 +73,7 @@ class ServicoController extends Controller
             return redirect()->route('telaListaServico');
         }
 
-        return view('edit_servico', [
+        return view('admin.servicos.edit_servico', [
             'servico' => $servico,
             'titulo' => 'Editar Serviço',
             'descricao' => 'Altere os dados do serviço abaixo.',

@@ -14,7 +14,7 @@ class PerfilController extends Controller
         $user = User::find(session('user.id'));
         $dono = Dono::findOrFail($user->id_dono);
 
-        return view('perfil', ['dono' => $dono]);
+        return view('dono.perfil', ['dono' => $dono]);
     }
 
     public function update(Request $request)

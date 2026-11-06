@@ -14,22 +14,22 @@ class HomeDonoController extends Controller
 {
     public function index()
     {
-        // O administrador não tem página de dono
+
         if (session('user.role') === 'admin') {
             return redirect()->route('dashboard');
         }
 
         $idDono = session('user.id_dono');
 
-        // Pets do dono logado
+
         $pets = Pet::where('id_dono', $idDono)
             ->orderBy('nome')
             ->get();
 
-        // Catálogo de serviços
+
         $servicos = Servico::orderBy('nome')->get();
 
-        // Agendamentos dos pets deste dono, do mais recente para o mais antigo
+
         $agendamentos = Agendamento::with(['pet', 'servico'])
             ->whereHas('pet', function ($query) use ($idDono) {
                 $query->where('id_dono', $idDono);
@@ -38,7 +38,7 @@ class HomeDonoController extends Controller
             ->limit(20)
             ->get();
 
-        return view('home_dono', [
+        return view('dono.home_dono', [
             'pets' => $pets,
             'servicos' => $servicos,
             'agendamentos' => $agendamentos,

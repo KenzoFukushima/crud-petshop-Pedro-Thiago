@@ -13,12 +13,12 @@ use Illuminate\Support\Facades\Hash;
 class AuthController extends Controller
 {
     public function login () {
-        return view('login');
+        return view('auth.login');
     }
 
     public function index()
 {
-    return view('dashboard', [
+    return view('admin.dashboard', [
         'totalDonos' => Dono::count(),
         'totalPets' => Pet::count(),
     ]);
@@ -84,7 +84,7 @@ class AuthController extends Controller
     }
 
         public function register() {
-        return view('register');
+        return view('auth.register');
     }
 
     public function registerSubmit(CadastroRequest $request) {
