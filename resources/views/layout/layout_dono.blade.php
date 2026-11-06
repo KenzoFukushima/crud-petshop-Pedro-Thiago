@@ -39,7 +39,7 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link text-dark" href="#servicos">
+                        <a class="nav-link text-dark" href="{{ route('home.dono') }}#servicos">
                             Serviços
                         </a>
                     </li>
@@ -47,6 +47,12 @@
                     <li class="nav-item">
                         <a class="nav-link text-dark" href="{{ route('home.dono') }}#meus-pets">
                             Meus Pets
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="{{ route('home.dono') }}#agendar">
+                            Agendar
                         </a>
                     </li>
 
@@ -73,6 +79,6 @@
 
     @yield('content')
 
-
+        <script src="{{ asset('assets/bootstrap/bootstrap.bundle.min.js') }}"></script>
 </body>
 </html>

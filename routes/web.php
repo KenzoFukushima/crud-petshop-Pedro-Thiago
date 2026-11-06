@@ -22,6 +22,12 @@ Route::middleware([CheckIsNotLogged::class])->group(function () {
     Route::post('/loginSubmit', [AuthController::class, 'loginSubmit'])
         ->name('loginSubmit');
 
+    Route::get('/cadastro', [AuthController::class, 'register'])
+        ->name('register');
+
+    Route::post('/cadastroSubmit', [AuthController::class, 'registerSubmit'])
+        ->name('registerSubmit');
+
 });
 
 
@@ -37,6 +43,13 @@ Route::middleware([CheckIsLogged::class])->group(function () {
     
     Route::get('/perfil', [PerfilController::class, 'index'])->name('perfil');
     Route::post('/perfil', [PerfilController::class, 'update'])->name('perfil.update');
+
+        // Área do dono: agendar e cancelar os próprios agendamentos
+    Route::post('/inicio/agendar', [HomeDonoController::class, 'agendar'])
+        ->name('dono.agendar');
+
+    Route::post('/inicio/agendamento/{id}/cancelar', [HomeDonoController::class, 'cancelar'])
+        ->name('dono.cancelar');
 
 
     // Rotas exclusivas do administrador

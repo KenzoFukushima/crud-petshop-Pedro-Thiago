@@ -99,6 +99,48 @@
         required
     >
 
+
+
+    {{-- Imagem --}}
+    <div class="mb-3">
+
+        <label for="imagem" class="form-label fw-semibold">
+            Imagem do serviço
+        </label>
+
+        {{-- Na edição, mostra a imagem atual --}}
+        @if (isset($servico) && $servico->imagem)
+            <div class="mb-2">
+                <img src="{{ asset('storage/' . $servico->imagem) }}"
+                    alt="Imagem de {{ $servico->nome }}"
+                    class="rounded border"
+                    style="width: 120px; height: 120px; object-fit: cover;">
+            </div>
+        @endif
+
+        <input
+            type="file"
+            name="imagem"
+            id="imagem"
+            accept="image/png,image/jpeg,image/webp"
+            class="form-control @error('imagem') is-invalid @enderror"
+        >
+
+        <div class="form-text">
+            JPG, PNG ou WEBP, até 2 MB.
+            @if (isset($servico))
+                Deixe em branco para manter a imagem atual.
+            @endif
+        </div>
+
+        @error('imagem')
+            <div class="text-danger">
+                {{ $message }}
+            </div>
+        @enderror
+
+    </div>
+
     @error('duracao_minutos')
         <div class="text-danger">
             {{ $message }}

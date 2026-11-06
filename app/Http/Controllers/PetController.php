@@ -31,7 +31,7 @@ class PetController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return view('listaPet', [
+        return view('admin.pets.listaPet', [
             'pets' => $pets,
             'busca' => $busca,
         ]);
@@ -41,7 +41,7 @@ class PetController extends Controller
     {
         $donos = Dono::orderBy('nome')->get();
 
-        return view('new_pet', [
+        return view('admin.pets.new_pet', [
             'donos' => $donos,
             'titulo' => 'Cadastrar Pet',
             'descricao' => 'Cadastre um novo pet para o dono.',

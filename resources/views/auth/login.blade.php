@@ -72,6 +72,11 @@
 
             </form>
 
+            <p class="text-center text-muted mt-3 mb-0">
+                Ainda não tem conta?
+                <a href="{{ route('register') }}">Cadastre-se</a>
+            </p>
+
         </div>
 
     </div>

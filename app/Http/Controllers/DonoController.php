@@ -10,10 +10,10 @@ use App\Models\User;
 use App\Services\Operations;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class DonoController extends Controller
 {
+    private const SENHA_INICIAL = '12345678';
     public function index(Request $request)
     {
         // Busca por nome, e-mail, telefone ou CPF
@@ -32,7 +32,7 @@ class DonoController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return view('listaDono', [
+        return view('admin.donos.listaDono', [
             'donos' => $donos,
             'busca' => $busca,
         ]);
@@ -40,7 +40,7 @@ class DonoController extends Controller
 
     public function newDono()
     {
-        return view('new_dono', [
+        return view('admin.donos.new_dono', [
             'titulo' => 'Cadastrar Dono',
             'descricao' => 'Cadastre um novo dono para o Pet Shop.',
             'action' => route('newDonoSubmit'),
@@ -60,15 +60,15 @@ class DonoController extends Controller
             User::create([
                 'email' => $dono->email,
                 'username' => $dono->email,
-                'password' => Hash::make(Str::random(12)),
+                'password' => Hash::make(self::SENHA_INICIAL),
                 'role' => 'dono',
                 'id_dono' => $dono->id,
             ]);
 
         });
 
-        return redirect()->route('telaListaDono')
-            ->with('sucesso', 'Dono cadastrado com sucesso.');
+            return redirect()->route('telaListaDono')
+            ->with('sucesso', 'Dono cadastrado com sucesso. Login: ' . $request->email . ' | senha inicial: ' . self::SENHA_INICIAL);
     }
 
     public function editDono($id)
@@ -86,7 +86,7 @@ class DonoController extends Controller
             return redirect()->route('telaListaDono');
         }
 
-        return view('edit_dono', [
+        return view('admin.donos.edit_dono', [
             'dono' => $dono,
             'titulo' => 'Editar Dono',
             'descricao' => 'Altere os dados do dono abaixo.',
